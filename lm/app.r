@@ -10,6 +10,7 @@
 library(shiny)
 library(ggplot2)
 
+
 # Define UI for application that draws a histogram
 ui <- fluidPage(
 
@@ -92,17 +93,37 @@ server <- function(input, output) {
       
     output$distPlot <- renderPlot({
         #plot(dataInput()$x,dataInput()$y)
-        ggplot() + geom_point(aes(x = dataInput()$x, y = dataInput()$y)) 
+        ggplot() + geom_point(aes(x = dataInput()$x, y = dataInput()$y))
+       
                               })
     
-    output$lmtPlot <- renderPlot({
+    output$lmPlot <- renderPlot({
+        model_summary <- summary(dataInput())
+     intercept_value <- 0.46
+     label1 = paste( "b=", intercept_value)
+        
+        slope_value <- 2.24
+        label2 = paste( "slope=", slope_value)
+        
+       R_squared <- 0.9268
+       label3 = paste("R squared =", R_squared)
+        
+        
         #plot(dataInput()$x,dataInput()$y)
-        ggplot()+
-        geom_point(aes(x = dataInput()$x, y = dataInput()$y)) 
-                    + abline(model)
+        ggplot() + 
+        geom_point(aes(x = dataInput()$x, y = dataInput()$y)) +
+        geom_line(aes(x = dataInput()$x, y = predict(modeled_data(), newdata = dataInput())),color = 'red') +
+        annotate("text", x=20, y=5, label=label1) +
+        annotate("text", x=20, y=6, label=label2) +
+        annotate("text", x=20, y=4, label=label3)
+        
+        
+                   # + ggtitle ('modeled output with regression line')
+                 #  + xlab('x values')
+                 # + ylab('y value')
+    })
     
-    
-   
+
     output$contents <- renderTable({
         
         # input$file1 will be NULL initially. After the user selects
@@ -120,5 +141,6 @@ server <- function(input, output) {
     })
         
 }
+                                 
 #run the file
 shinyApp(ui = ui, server = server)
